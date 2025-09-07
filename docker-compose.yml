@@ -1,0 +1,66 @@
+# docker-compose.yml
+# Defines the services, networks, and volumes for the Docker environment.
+
+services:
+  # Web Server Service: PHP 8.4 + Apache + CLI Tools
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: php-apache
+    hostname: php-apache
+    ports:
+      - "80:80"   # HTTP port
+      - "443:443" # HTTPS port
+      # - "2222:22" # SSH Enable if need
+    volumes:
+      # Mounts the local ./html directory to the container's web root.
+      - ./html:/var/www/html
+      # Mounts the local ./cert directory for SSL certificates.
+      - ./cert:/etc/apache2/ssl
+      # Mount apache & php config files.
+      - ./apache/default-ssl.conf:/etc/apache2/sites-available/default-ssl.conf:ro
+      - ./php/custom-php.ini:/usr/local/etc/php/conf.d/custom-php.ini:ro
+    environment:
+      - TZ=Asia/Bangkok
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"  # Max size of a log file before it is rotated.
+        max-file: "9"    # Number of rotated log files to keep.
+    # Keep the container running to allow exec access
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+    networks:
+      - app-network
+
+
+  code-server:
+    image: lscr.io/linuxserver/code-server:latest
+    container_name: code-server
+    hostname: code-server
+    environment:
+      - PUID=2000
+      - PGID=2000
+      - TZ=Asia/Bangkok
+      - PASSWORD=${VSCODE_PASSWORD} #optional
+      # - HASHED_PASSWORD= #optional
+      - SUDO_PASSWORD=${VSCODE_PASSWORD} #optional
+      # - SUDO_PASSWORD_HASH= #optional
+      # - PROXY_DOMAIN=code-server.my.domain #optional
+      - DEFAULT_WORKSPACE=/var/www/html #optional
+      - PWA_APPNAME=code-server #optional
+    volumes:
+      - ./code-server/config:/config
+      - ./html:/var/www/html
+    ports:
+      - 50000:8443
+    restart: unless-stopped
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
