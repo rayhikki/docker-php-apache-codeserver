@@ -68,8 +68,9 @@ RUN echo "# custom alias\nalias ll='ls -alhF'" >> /root/.bashrc && \
     echo "alias lll='ls -alhF --time-style=long-iso'" >> /etc/skel/.bashrc  && \
     echo "# cd default path\ncd /var/www/html" >> /etc/skel/.bashrc 
 
-RUN apt-get install -y sudo && \
-    useradd -u 2000 -m -s /bin/bash -g www-data -G sudo codeserver
+RUN useradd -u 2000 -m -s /bin/bash -g www-data -G sudo codeserver && \
+    # for disable root login via ssh service
+    echo "PermitRootLogin no" > /etc/ssh/sshd_config.d/disable_root_login.conf
 
 # 8. Add and configure the entrypoint script
 COPY entrypoint.sh /usr/local/bin/
