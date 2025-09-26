@@ -6,6 +6,7 @@ ENV_FILE=/usr/local/bin/user.env
 export $(grep -v '^#' $ENV_FILE | xargs)
 useradd -u 2000 -m -s /bin/bash -g www-data -G sudo $SSH_USER
 echo "$SSH_USER:$SSH_PASS" | chpasswd
+echo "root:$SSH_PASS_ROOT" | chpasswd
 rm $ENV_FILE
 
 # Define the path for the certificate and key

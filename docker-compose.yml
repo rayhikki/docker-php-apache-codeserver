@@ -3,7 +3,7 @@
 
 services:
   # Web Server Service: PHP 8.4 + Apache + CLI Tools
-  web:
+  php-apache:
     build:
       context: .
       dockerfile: Dockerfile
@@ -12,13 +12,13 @@ services:
     ports:
       - "80:80"   # HTTP port
       - "443:443" # HTTPS port
-      # - "2222:22" # SSH Enable if need
+      # - "2222:22" # SSH
     volumes:
       # Mounts the local ./html directory to the container's web root.
       - ./html:/var/www/html
+      - ./logs:/var/log/apache2
       # Mounts the local ./cert directory for SSL certificates.
       - ./cert:/etc/apache2/ssl
-      # Mount apache & php config files.
       - ./apache/default-ssl.conf:/etc/apache2/sites-available/default-ssl.conf:ro
       - ./php/custom-php.ini:/usr/local/etc/php/conf.d/custom-php.ini:ro
     environment:
