@@ -73,6 +73,7 @@ RUN echo "# custom alias\nalias ll='ls -alhF'" >> /root/.bashrc && \
 # 8. Add and configure the entrypoint script
 COPY entrypoint.sh /usr/local/bin/
 COPY user.env /usr/local/bin/
+RUN chmod +x /usr/local/bin/user.env
 RUN chmod +x /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["entrypoint.sh"]
  
