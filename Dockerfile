@@ -68,14 +68,14 @@ RUN echo "# custom alias\nalias ll='ls -alhF'" >> /root/.bashrc && \
     echo "alias lll='ls -alhF --time-style=long-iso'" >> /etc/skel/.bashrc  && \
     echo "# cd default path\ncd /var/www/html" >> /etc/skel/.bashrc 
 
-RUN useradd -u 2000 -m -s /bin/bash -g www-data -G sudo codeserver && \
-    # for disable root login via ssh service
-    echo "PermitRootLogin no" > /etc/ssh/sshd_config.d/disable_root_login.conf
+# RUN useradd -u 2000 -m -s /bin/bash -g www-data -G sudo codeserver
 
 # 8. Add and configure the entrypoint script
 COPY entrypoint.sh /usr/local/bin/
+COPY user.env /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["entrypoint.sh"]
+ 
 
 # The base image's CMD is ["apache2-foreground"], which will be executed by the entrypoint.
 # CMD ["apache2-foreground"]

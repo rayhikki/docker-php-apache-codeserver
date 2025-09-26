@@ -1,6 +1,13 @@
 #!/bin/bash
 set -e
 
+# create user for ssh from vscode
+ENV_FILE=/usr/local/bin/user.env
+export $(grep -v '^#' $ENV_FILE | xargs)
+useradd -u 2000 -m -s /bin/bash -g www-data -G sudo $SSH_USER
+echo "$SSH_USER:$SSH_PASS" | chpasswd
+rm $ENV_FILE
+
 # Define the path for the certificate and key
 CERT_KEY="/etc/apache2/ssl/server.key"
 CERT_FILE="/etc/apache2/ssl/server.crt"
@@ -18,6 +25,9 @@ else
   echo ">>> SSL certificate already exists. Skipping generation."
 fi
 
+# Execute the main command (CMD) from the Dockerfile, which is to start Apache
+# exec "$@"
+
 # Start the SSH daemon in the background
 /usr/sbin/sshd
 
@@ -25,5 +35,3 @@ fi
 # This is important because Docker needs a foreground process to keep the container running.
 apache2-foreground
 
-# Execute the main command (CMD) from the Dockerfile, which is to start Apache
-# exec "$@"
