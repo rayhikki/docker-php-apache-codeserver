@@ -3,12 +3,12 @@
 ## PHP-Apache
 Base from image: PHP-8.4:Apache\
 Auto generate self-sign certificate for https support\
-Same as - https://github.com/rayhikki/dokcer-php-apache
+Same as - https://github.com/rayhikki/dokcer-php-apache but +VS Code build-in
 
 ## Code-Server
 Code-Server image: lscr.io/linuxserver/code-server:latest\
-Can access php-apache container via "ssh codeserver@php-apache" in termial (sshd enable)
-But need to set password in container before with command "passwd codeserver"
+Can access php-apache container via terminal with "ssh codeserver@php-apache" in termial (sshd enable)\
+access root permission with "su root" with password are set in user.env
 
 ## PHP Plugin Enable
 Composer\
@@ -24,4 +24,5 @@ htop\
 iftop\
 nano\
 ping\
-snmpwalk/snmpget/snmpset
+nslookup\
+snmpwalk/get/set
