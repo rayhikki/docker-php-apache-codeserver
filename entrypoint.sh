@@ -2,12 +2,23 @@
 set -e
 
 # create user for ssh from vscode
-ENV_FILE=/usr/local/bin/user.env
-export $(grep -v '^#' $ENV_FILE | xargs)
-useradd -u 2000 -m -s /bin/bash -g www-data -G sudo $SSH_USER
-echo "$SSH_USER:$SSH_PASS" | chpasswd
-echo "root:$SSH_PASS_ROOT" | chpasswd
-rm $ENV_FILE
+ENV_FILE=/tmp/user.env
+
+if [ -f "$ENV_FILE" ]; then
+  export $(grep -v '^#' $ENV_FILE | xargs)
+  if id "${SSH_USER}" >/dev/null 2>&1; then
+    echo "✅ User '${SSH_USER}' already exists in /etc/passwd. Skipping creation."
+    echo "$SSH_USER:$SSH_PASS" | chpasswd
+    echo "root:$SSH_PASS_ROOT" | chpasswd
+    rm $ENV_FILE
+  else
+    echo "👤 User not found. Creating user '${SSH_USER}'..."
+    useradd -u 2000 -m -s /bin/bash -g www-data -G sudo $SSH_USER
+    echo "$SSH_USER:$SSH_PASS" | chpasswd
+    echo "root:$SSH_PASS_ROOT" | chpasswd
+    rm $ENV_FILE
+  fi
+fi
 
 # Define the path for the certificate and key
 CERT_KEY="/etc/apache2/ssl/server.key"
@@ -35,4 +46,3 @@ fi
 # Start the Apache webserver in the foreground
 # This is important because Docker needs a foreground process to keep the container running.
 apache2-foreground
-
